@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevOps To-Do Application</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>DevOps To-Do List</h1>
+
+        <p class="subtitle">
+            AWS & CI/CD Project
+        </p>
+
+        <!-- Add Task -->
+
+        <form action="/add" method="POST" class="add-form">
+
+            <input
+                type="text"
+                name="title"
+                placeholder="Enter a new task..."
+                required
+            >
+
+            <button type="submit">
+                Add Task
+            </button>
+
+        </form>
+
+
+        <!-- Task List -->
+
+        <div class="task-list">
+
+            {% if tasks %}
+
+                {% for task in tasks %}
+
+                <div class="task
+                    {% if task['completed'] %}
+                        completed
+                    {% endif %}
+                ">
+
+                    <div class="task-title">
+
+                        {% if task['completed'] %}
+
+                            <span class="done">
+                                ✓
+                            </span>
+
+                            <span>
+                                {{ task['title'] }}
+                            </span>
+
+                        {% else %}
+
+                            <span>
+                                {{ task['title'] }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="actions">
+
+                        {% if not task['completed'] %}
+
+                        <a
+                            href="/complete/{{ task['id'] }}"
+                            class="complete"
+                        >
+                            Complete
+                        </a>
+
+                        {% endif %}
+
+
+                        <form
+                            action="/update/{{ task['id'] }}"
+                            method="POST"
+                            class="update-form"
+                        >
+
+                            <input
+                                type="text"
+                                name="title"
+                                value="{{ task['title'] }}"
+                                required
+                            >
+
+                            <button type="submit">
+                                Update
+                            </button>
+
+                        </form>
+
+
+                        <a
+                            href="/delete/{{ task['id'] }}"
+                            class="delete"
+                            onclick="return confirm('Delete this task?')"
+                        >
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="empty">
+                    No tasks yet. Add your first task!
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
