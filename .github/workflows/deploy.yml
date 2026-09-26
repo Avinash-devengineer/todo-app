@@ -1,0 +1,45 @@
+name: Deploy To-Do App to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy application
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "Starting deployment..."
+
+            cd /home/ec2-user/todo-app
+
+            echo "Checking current branch..."
+            git branch --show-current
+
+            echo "Pulling latest code..."
+            git pull --ff-only origin main
+
+            echo "Activating virtual environment..."
+            source venv/bin/activate
+
+            echo "Installing dependencies..."
+            pip install -r requirements.txt
+
+            echo "Restarting Todo application..."
+            sudo systemctl restart todo-app
+
+            echo "Checking application status..."
+            sudo systemctl is-active todo-app
+
+            echo "Deployment completed successfully!"
